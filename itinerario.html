@@ -3,169 +3,343 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Itinerario - Cascinar Mangiando</title>
+<title>Percorso - Cascinar Mangiando</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
   :root{
-    --cream:#f5f0e6;
+    --cream:#f3ede0;
+    --paper:#fdfaf3;
     --brown:#8a6d3b;
+    --brown-dark:#6e5527;
     --sage:#7d8c6a;
-    --ink:#33302a;
-    --card:#ffffff;
+    --lavender:#9a86b3;
+    --ink:#3a3226;
+    --line:#cfc7b4;
   }
   *{box-sizing:border-box;}
-  body{
+  html,body{
     margin:0;
-    font-family:'Trebuchet MS', Verdana, sans-serif;
-    background:var(--cream);
+    height:100%;
+    font-family:'Patrick Hand', cursive;
     color:var(--ink);
-    padding:16px;
-    max-width:520px;
-    margin:0 auto;
+    overflow:hidden;
   }
-  a{ color:var(--brown); }
+  #map{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    /* mappa "stilizzata" - look acquerello/seppia */
+    filter: sepia(35%) saturate(75%) brightness(1.03) contrast(95%);
+  }
+
   .topbar{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:500;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:10px;
+    padding:10px 14px;
+    background:linear-gradient(180deg, rgba(243,237,224,0.95), rgba(243,237,224,0));
+    pointer-events:none;
   }
-  .topbar a{ text-decoration:none; font-weight:bold; }
-  h1{
-    font-size:1.4rem;
-    text-align:center;
-    color:var(--brown);
-    margin:6px 0 2px;
-  }
-  .date{
-    text-align:center;
-    color:var(--sage);
-    margin-bottom:18px;
-    font-size:0.95rem;
-  }
-  .route-link{
-    display:block;
-    text-align:center;
-    background:var(--sage);
-    color:#fff;
+  .topbar a{
+    pointer-events:all;
     text-decoration:none;
-    padding:12px;
-    border-radius:30px;
-    font-weight:bold;
-    margin-bottom:24px;
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.3rem;
+    color:var(--brown-dark);
+    background:var(--paper);
+    padding:6px 16px;
+    border-radius:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
   }
-  .stop{
-    background:var(--card);
-    border-radius:14px;
-    padding:16px;
-    margin-bottom:14px;
-    box-shadow:0 3px 10px rgba(0,0,0,0.08);
-    border-left:6px solid var(--brown);
+  .title-pill{
+    pointer-events:all;
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.4rem;
+    color:#fff;
+    background:var(--brown);
+    padding:6px 18px;
+    border-radius:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
   }
-  .stop h2{
-    margin:0 0 4px;
-    font-size:1.1rem;
+
+  /* Marker numerati */
+  .stop-marker{
+    width:36px; height:36px;
+    border-radius:50% 50% 50% 0;
+    background:var(--sage);
+    border:3px solid #fff;
+    transform:rotate(-45deg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 3px 8px rgba(0,0,0,0.3);
+  }
+  .stop-marker span{
+    transform:rotate(45deg);
+    color:#fff;
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.2rem;
+  }
+
+  /* Bottom sheet dettaglio */
+  #sheet{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    z-index:600;
+    transform:translateY(100%);
+    transition:transform .3s ease;
+    background:
+      repeating-linear-gradient(var(--paper), var(--paper) 38px, var(--line) 39px);
+    border-radius:18px 18px 0 0;
+    box-shadow:0 -6px 20px rgba(60,45,20,0.25);
+    padding:18px 22px 26px 30px;
+    max-height:55%;
+    overflow-y:auto;
+  }
+  #sheet.open{ transform:translateY(0); }
+  #sheet::before{
+    content:"";
+    position:absolute;
+    top:0; left:14px; bottom:0;
+    width:2px;
+    background:#e3a9a9;
+    opacity:.6;
+  }
+  #sheet .handle{
+    width:44px; height:5px;
+    background:var(--line);
+    border-radius:4px;
+    margin:-6px auto 12px;
+  }
+  #sheet .close{
+    position:absolute;
+    top:10px; right:14px;
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.3rem;
     color:var(--brown);
+    cursor:pointer;
+    background:none;
+    border:none;
   }
-  .stop .addr{
-    font-size:0.85rem;
-    color:#777;
-    margin-bottom:8px;
+  #sheet h2{
+    font-family:'Caveat', cursive;
+    font-size:1.7rem;
+    color:var(--brown-dark);
+    margin:0 0 2px;
   }
-  .stop .menu{
+  #sheet .addr{
     font-size:0.95rem;
+    color:#888;
     margin-bottom:10px;
+  }
+  #sheet .row{
+    font-size:1.1rem;
+    margin-bottom:6px;
     line-height:1.4;
   }
-  .stop .links{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
+  #sheet .dish::before{ content:"🍽️ "; }
+  #sheet .drink::before{ content:"🍷 "; }
+  #sheet .drink{ color:var(--sage); }
+  #sheet .next{
+    margin-top:14px;
+    padding-top:10px;
+    border-top:2px dashed var(--line);
+    font-family:'Caveat', cursive;
+    font-size:1.3rem;
+    color:var(--lavender);
   }
-  .stop .links a{
-    font-size:0.85rem;
+  #sheet .links{
+    margin-top:12px;
+  }
+  #sheet .links a{
+    display:inline-block;
+    font-size:0.9rem;
     background:#f0ebdf;
-    padding:6px 12px;
+    padding:6px 14px;
     border-radius:20px;
     text-decoration:none;
     font-weight:bold;
+    color:var(--brown-dark);
+    margin-right:8px;
   }
-  .connector{
-    text-align:center;
-    color:var(--sage);
-    font-size:0.85rem;
-    margin:-6px 0 14px;
-    font-style:italic;
+
+  .hint-pill{
+    position:fixed;
+    bottom:18px; left:50%;
+    transform:translateX(-50%);
+    z-index:400;
+    font-family:'Caveat', cursive;
+    font-size:1.2rem;
+    background:var(--paper);
+    color:var(--brown-dark);
+    padding:8px 18px;
+    border-radius:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.15);
+    pointer-events:none;
+    transition:opacity .3s ease;
   }
 </style>
 </head>
 <body>
-  <div class="topbar">
-    <a href="index.html">← Locandina</a>
-    <a href="tessera.html">🎫 Tessera</a>
-  </div>
 
-  <h1>Cascinar Mangiando Home Made</h1>
-  <div class="date">Camminando tra Oleggio e Bellinzago · 14 Giugno 2026</div>
+<div id="map"></div>
 
-  <a class="route-link" target="_blank"
-     href="https://www.google.com/maps/dir/?api=1&origin=Via+San+Giovanni+165,+28047+Oleggio+NO&destination=45.6000,8.6606&waypoints=Via+Strera+112,+28047+Oleggio+NO|Via+Ticino+105,+28043+Bellinzago+Novarese+NO&travelmode=walking">
-    🗺️ Apri il percorso completo a piedi
-  </a>
+<div class="topbar">
+  <a href="index.html">← Locandina</a>
+  <span class="title-pill">14 Giugno 2026</span>
+  <a href="tessera.html">🎫</a>
+</div>
 
-  <!-- TAPPA 1 -->
-  <div class="stop">
-    <h2>Tappa I · Circolo San Giovanni</h2>
-    <div class="addr">Via San Giovanni 165, 28047 Oleggio (NO)</div>
-    <div class="menu">🍷 Aperitivo libero</div>
-    <div class="links">
-      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=Via+San+Giovanni+165,+28047+Oleggio+NO">Apri mappa</a>
-    </div>
-  </div>
+<div class="hint-pill" id="hint">👉 Tocca una tappa sulla mappa</div>
 
-  <div class="connector">
-    🚶‍♀️ verso la Tappa II ·
-    <a target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Via+San+Giovanni+165,+28047+Oleggio+NO&destination=Via+Strera+112,+28047+Oleggio+NO&travelmode=walking">percorso e tempo</a>
-  </div>
+<div id="sheet">
+  <div class="handle"></div>
+  <button class="close" onclick="closeSheet()">✕</button>
+  <div id="sheet-content"></div>
+</div>
 
-  <!-- TAPPA 2 -->
-  <div class="stop">
-    <h2>Tappa II · Da Ema e Wendy</h2>
-    <div class="addr">Via Strera 112, 28047 Oleggio (NO)</div>
-    <div class="menu">🍝 Lasagne e vino rosso</div>
-    <div class="links">
-      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=Via+Strera+112,+28047+Oleggio+NO">Apri mappa</a>
-    </div>
-  </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const STOPS = [
+  {
+    num: 1,
+    nome: "Circolo San Giovanni",
+    indirizzo: "Via San Giovanni 165, 28047 Oleggio (NO)",
+    query: "Via San Giovanni 165, 28047 Oleggio NO",
+    dish: "Aperitivo libero",
+    drink: "Da bere... a piacere!"
+  },
+  {
+    num: 2,
+    nome: "Da Ema e Wendy",
+    indirizzo: "Via Strera 112, 28047 Oleggio (NO)",
+    query: "Via Strera 112, 28047 Oleggio NO",
+    dish: "Lasagne",
+    drink: "Vino rosso"
+  },
+  {
+    num: 3,
+    nome: "Da Gaber e Lele",
+    indirizzo: "Via Ticino 105, 28043 Bellinzago Novarese (NO)",
+    query: "Via Ticino 105, 28043 Bellinzago Novarese NO",
+    dish: "Polpette fritte e in umido, con purè e carote alla paprika",
+    drink: "Vino rosso"
+  },
+  {
+    num: 4,
+    nome: "Big Bamboo",
+    indirizzo: "Bellinzago Novarese, 28043 (NO)",
+    lat: 45.566675,
+    lng: 8.660683,
+    dish: "Torta caprese",
+    drink: "Caffè e ammazzacaffè"
+  }
+];
 
-  <div class="connector">
-    🚶‍♂️ verso la Tappa III ·
-    <a target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Via+Strera+112,+28047+Oleggio+NO&destination=Via+Ticino+105,+28043+Bellinzago+Novarese+NO&travelmode=walking">percorso e tempo</a>
-  </div>
+const map = L.map('map', { zoomControl: false }).setView([45.59, 8.62], 13);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  maxZoom: 19
+}).addTo(map);
+L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-  <!-- TAPPA 3 -->
-  <div class="stop">
-    <h2>Tappa III · Da Gaber e Lele</h2>
-    <div class="addr">Via Ticino 105, 28043 Bellinzago Novarese (NO)</div>
-    <div class="menu">🍖 Polpette fritte e in umido, purè e carote alla paprika, vino rosso</div>
-    <div class="links">
-      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=Via+Ticino+105,+28043+Bellinzago+Novarese+NO">Apri mappa</a>
-    </div>
-  </div>
+function haversine(lat1, lon1, lat2, lon2){
+  const R = 6371; // km
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2-lat1);
+  const dLon = toRad(lon2-lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
 
-  <div class="connector">
-    🚶 verso la Tappa IV ·
-    <a target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Via+Ticino+105,+28043+Bellinzago+Novarese+NO&destination=45.6000,8.6606&travelmode=walking">percorso e tempo</a>
-  </div>
+function makeIcon(num){
+  return L.divIcon({
+    className: '',
+    html: `<div class="stop-marker"><span>${num}</span></div>`,
+    iconSize: [36,36],
+    iconAnchor: [18,36]
+  });
+}
 
-  <!-- TAPPA 4 -->
-  <div class="stop">
-    <h2>Tappa IV · Big Bamboo</h2>
-    <div class="addr">45°33'60.0"N 8°39'38.4"E</div>
-    <div class="menu">🍰 Torta caprese, caffè, ammazzacaffè</div>
-    <div class="links">
-      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=45.6000,8.6606">Apri mappa</a>
-    </div>
-  </div>
+function openSheet(stop, nextStop, distKm){
+  document.getElementById('hint').style.opacity = "0";
+  let html = `
+    <h2>Tappa ${stop.num} · ${stop.nome}</h2>
+    <div class="addr">${stop.indirizzo}</div>
+    <div class="row dish">${stop.dish}</div>
+    <div class="row drink">${stop.drink}</div>
+  `;
+  if (nextStop && distKm != null){
+    const minutes = Math.round(distKm / 5 * 60); // 5 km/h
+    html += `<div class="next">🚶 Verso Tappa ${nextStop.num} (${nextStop.nome}): ~${distKm.toFixed(1)} km · ~${minutes} min a piedi</div>`;
+  }
+  const dest = stop.lat ? `${stop.lat},${stop.lng}` : encodeURIComponent(stop.query);
+  html += `<div class="links"><a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${dest}">Apri in Google Maps</a>`;
+  if (nextStop){
+    const origin = stop.lat ? `${stop.lat},${stop.lng}` : encodeURIComponent(stop.query);
+    const destination = nextStop.lat ? `${nextStop.lat},${nextStop.lng}` : encodeURIComponent(nextStop.query);
+    html += `<a target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=walking">Percorso a piedi</a>`;
+  }
+  html += `</div>`;
+
+  document.getElementById('sheet-content').innerHTML = html;
+  document.getElementById('sheet').classList.add('open');
+}
+
+function closeSheet(){
+  document.getElementById('sheet').classList.remove('open');
+}
+
+async function geocode(query){
+  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=it&q=${encodeURIComponent(query)}`;
+  const res = await fetch(url, { headers: { 'Accept-Language': 'it' } });
+  const data = await res.json();
+  if (data && data[0]) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+  return null;
+}
+
+async function init(){
+  const bounds = [];
+  for (let i = 0; i < STOPS.length; i++){
+    const stop = STOPS[i];
+    if (!stop.lat){
+      const pos = await geocode(stop.query);
+      if (pos){ stop.lat = pos.lat; stop.lng = pos.lng; }
+    }
+  }
+
+  // Linea del percorso
+  const latlngs = STOPS.filter(s=>s.lat).map(s=>[s.lat, s.lng]);
+  L.polyline(latlngs, { color: '#9a86b3', weight: 3, dashArray: '6 8', opacity: 0.8 }).addTo(map);
+
+  STOPS.forEach((stop, i) => {
+    if (!stop.lat) return;
+    bounds.push([stop.lat, stop.lng]);
+    const marker = L.marker([stop.lat, stop.lng], { icon: makeIcon(stop.num) }).addTo(map);
+    marker.on('click', () => {
+      const next = STOPS[i+1];
+      let dist = null;
+      if (next && next.lat){
+        dist = haversine(stop.lat, stop.lng, next.lat, next.lng);
+      }
+      openSheet(stop, next, dist);
+    });
+  });
+
+  if (bounds.length) map.fitBounds(bounds, { padding: [60, 60] });
+}
+
+init();
+</script>
 
 </body>
 </html>
