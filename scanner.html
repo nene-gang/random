@@ -46,6 +46,12 @@
 <body>
   <h1>📷 Scanner check-in organizzatore</h1>
 
+  <div style="margin-bottom:10px;">
+    <label><input type="radio" name="mode" value="tappa" checked> ✅ Valida tappa</label>
+    &nbsp;&nbsp;
+    <label><input type="radio" name="mode" value="glass"> 🍷 Aggiungi bicchiere</label>
+  </div>
+
   <label for="tappa">Tappa attuale:</label><br>
   <select id="tappa">
     <option value="t1">Tappa I - Circolo San Giovanni</option>
@@ -69,17 +75,29 @@
     lastId = decodedText;
     lastTime = now;
 
+    const mode = document.querySelector('input[name="mode"]:checked').value;
     const tappa = document.getElementById("tappa").value;
+
+    const payload = { id: decodedText };
+    if (mode === "tappa") {
+      payload.tappa = tappa;
+    } else {
+      payload.glass = true;
+    }
 
     fetch("/api/checkin", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({id: decodedText, tappa})
+      body: JSON.stringify(payload)
     })
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => {
       resultDiv.className = "ok";
-      resultDiv.textContent = "✅ " + (data.nome || "Partecipante") + " validato per " + tappa.toUpperCase();
+      if (mode === "tappa") {
+        resultDiv.textContent = "✅ " + (data.nome || "Partecipante") + " validato per " + tappa.toUpperCase() + " · 🍷 totale: " + data.glasses;
+      } else {
+        resultDiv.textContent = "🍷 " + (data.nome || "Partecipante") + " · bicchieri totali: " + data.glasses;
+      }
     })
     .catch(()=>{
       resultDiv.className = "err";

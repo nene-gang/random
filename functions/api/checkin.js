@@ -28,15 +28,24 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: "invalid json" }, 400);
   }
 
-  const { id, nome, tappa } = body;
+  const { id, nome, tappa, glass } = body;
   if (!id) return jsonResponse({ error: "missing id" }, 400);
 
   const data = await getRecord(env, id);
 
   if (nome) data.nome = nome;
+  data.glasses = data.glasses || 0;
+
   if (tappa) {
     data.checkins = data.checkins || {};
-    data.checkins[tappa] = Date.now();
+    if (!data.checkins[tappa]) {
+      data.checkins[tappa] = Date.now();
+      data.glasses += 1; // bicchiere automatico alla validazione tappa
+    }
+  }
+
+  if (glass) {
+    data.glasses += 1; // bicchiere extra scansionato
   }
 
   await env.CHECKINS.put(id, JSON.stringify(data));
@@ -45,13 +54,14 @@ export async function onRequestPost(context) {
 
 async function getRecord(env, id) {
   const raw = await env.CHECKINS.get(id);
-  if (!raw) return { nome: "", checkins: {} };
+  if (!raw) return { nome: "", checkins: {}, glasses: 0 };
   try {
     const parsed = JSON.parse(raw);
     parsed.checkins = parsed.checkins || {};
+    parsed.glasses = parsed.glasses || 0;
     return parsed;
   } catch {
-    return { nome: "", checkins: {} };
+    return { nome: "", checkins: {}, glasses: 0 };
   }
 }
 

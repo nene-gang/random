@@ -78,6 +78,14 @@
   }
   .ok{ color:var(--sage); }
   .pending{ color:#bbb; }
+  .glasses{
+    margin-top:16px;
+    padding-top:12px;
+    border-top:1px solid #eee;
+    font-size:1.2rem;
+    font-weight:bold;
+    color:var(--brown);
+  }
   .hint{ font-size:0.8rem; color:#999; margin-top:14px; }
 </style>
 </head>
@@ -100,6 +108,7 @@
       <h2 id="nomeMostrato"></h2>
       <img class="qr" id="qrImg" alt="QR tessera">
       <div class="stops" id="stops"></div>
+      <div class="glasses" id="glasses"></div>
       <p class="hint">Mostra questo QR all'organizzatore ad ogni tappa per la convalida.</p>
     </div>
   </div>
@@ -141,6 +150,9 @@ function aggiornaStato(id){
         row.innerHTML = `<span>${t}</span><span class="badge ${done?'ok':'pending'}">${done ? '✅ validata' : '⏳ in attesa'}</span>`;
         el.appendChild(row);
       });
+      const glasses = data.glasses || 0;
+      document.getElementById("glasses").textContent =
+        "🍷 Bicchieri totali: " + glasses;
     })
     .catch(()=>{});
 }
