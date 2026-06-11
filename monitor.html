@@ -128,14 +128,15 @@ async function load(){
 
     let html = `<table><thead><tr><th>Nome</th>`;
     TAPPE_LABEL.forEach(t => html += `<th>${t}</th>`);
-    html += `<th>🍷</th></tr></thead><tbody>`;
+    html += `<th>🍷</th><th>Tessera</th></tr></thead><tbody>`;
 
     participants.forEach(p => {
       html += `<tr><td class="nome">${escapeHtml(p.nome)}</td>`;
       TAPPE.forEach(t => {
         html += `<td class="${p.checkins[t] ? 'ok':'pending'}">${p.checkins[t] ? '✅':'—'}</td>`;
       });
-      html += `<td class="glasses">${p.glasses}</td></tr>`;
+      const link = window.location.origin + "/tessera.html?id=" + encodeURIComponent(p.id);
+      html += `<td class="glasses">${p.glasses}</td><td><a href="${link}" target="_blank">apri</a></td></tr>`;
     });
 
     html += `</tbody></table>`;
