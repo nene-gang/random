@@ -214,7 +214,9 @@ const STOPS = [
     num: 1,
     nome: "Circolo San Giovanni",
     indirizzo: "Via San Giovanni 165, 28047 Oleggio (NO)",
-    query: "Via San Giovanni 165, 28047 Oleggio NO",
+    query: "Via San Giovanni 165, Oleggio, Italia",
+    lat: 45.58606365950373,
+    lng: 8.65707438953367,
     dish: "Aperitivo libero",
     drink: "Da bere... a piacere!"
   },
@@ -222,7 +224,9 @@ const STOPS = [
     num: 2,
     nome: "Da Ema e Wendy",
     indirizzo: "Via Strera 112, 28047 Oleggio (NO)",
-    query: "Via Strera 112, 28047 Oleggio NO",
+    query: "Via Strera 112, Oleggio, Italia",
+    lat: 45.58087065414381,
+    lng: 8.654991189022203,
     dish: "Lasagne",
     drink: "Vino rosso"
   },
@@ -230,7 +234,9 @@ const STOPS = [
     num: 3,
     nome: "Da Gaber e Lele",
     indirizzo: "Via Ticino 105, 28043 Bellinzago Novarese (NO)",
-    query: "Via Ticino 105, 28043 Bellinzago Novarese NO",
+    query: "Via Ticino 105, Bellinzago Novarese, Italia",
+    lat: 45.569630056365845,
+    lng: 8.657791233560525,
     dish: "Polpette fritte e in umido, con purè e carote alla paprika",
     drink: "Vino rosso"
   },
@@ -309,13 +315,6 @@ async function geocode(query){
 
 async function init(){
   const bounds = [];
-  for (let i = 0; i < STOPS.length; i++){
-    const stop = STOPS[i];
-    if (!stop.lat){
-      const pos = await geocode(stop.query);
-      if (pos){ stop.lat = pos.lat; stop.lng = pos.lng; }
-    }
-  }
 
   // Linea del percorso
   const latlngs = STOPS.filter(s=>s.lat).map(s=>[s.lat, s.lng]);
