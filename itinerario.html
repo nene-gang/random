@@ -218,7 +218,9 @@ const STOPS = [
     lat: 45.58606365950373,
     lng: 8.65707438953367,
     dish: "Aperitivo libero",
-    drink: "Da bere... a piacere!"
+    drink: "Da bere... a piacere!",
+    nextDist: "650 m",
+    nextTime: 9
   },
   {
     num: 2,
@@ -228,7 +230,9 @@ const STOPS = [
     lat: 45.58087065414381,
     lng: 8.654991189022203,
     dish: "Lasagne",
-    drink: "Vino rosso"
+    drink: "Vino rosso",
+    nextDist: "1,7 km",
+    nextTime: 23
   },
   {
     num: 3,
@@ -238,7 +242,9 @@ const STOPS = [
     lat: 45.569630056365845,
     lng: 8.657791233560525,
     dish: "Polpette fritte e in umido, con purè e carote alla paprika",
-    drink: "Vino rosso"
+    drink: "Vino rosso",
+    nextDist: "350 m",
+    nextTime: 5
   },
   {
     num: 4,
@@ -258,15 +264,6 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r
 }).addTo(map);
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-function haversine(lat1, lon1, lat2, lon2){
-  const R = 6371; // km
-  const toRad = d => d * Math.PI / 180;
-  const dLat = toRad(lat2-lat1);
-  const dLon = toRad(lon2-lon1);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-
 function makeIcon(num){
   return L.divIcon({
     className: '',
@@ -276,7 +273,7 @@ function makeIcon(num){
   });
 }
 
-function openSheet(stop, nextStop, distKm){
+function openSheet(stop, nextStop){
   document.getElementById('hint').style.opacity = "0";
   let html = `
     <h2>Tappa ${stop.num} · ${stop.nome}</h2>
@@ -284,9 +281,8 @@ function openSheet(stop, nextStop, distKm){
     <div class="row dish">${stop.dish}</div>
     <div class="row drink">${stop.drink}</div>
   `;
-  if (nextStop && distKm != null){
-    const minutes = Math.round(distKm / 5 * 60); // 5 km/h
-    html += `<div class="next">🚶 Verso Tappa ${nextStop.num} (${nextStop.nome}): ~${distKm.toFixed(1)} km · ~${minutes} min a piedi</div>`;
+  if (nextStop && stop.nextDist){
+    html += `<div class="next">🚶 Verso Tappa ${nextStop.num} (${nextStop.nome}): ${stop.nextDist} · ~${stop.nextTime} min a piedi</div>`;
   }
   const dest = stop.lat ? `${stop.lat},${stop.lng}` : encodeURIComponent(stop.query);
   html += `<div class="links"><a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${dest}">Apri in Google Maps</a>`;
@@ -305,14 +301,6 @@ function closeSheet(){
   document.getElementById('sheet').classList.remove('open');
 }
 
-async function geocode(query){
-  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=it&q=${encodeURIComponent(query)}`;
-  const res = await fetch(url, { headers: { 'Accept-Language': 'it' } });
-  const data = await res.json();
-  if (data && data[0]) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-  return null;
-}
-
 async function init(){
   const bounds = [];
 
@@ -325,12 +313,7 @@ async function init(){
     bounds.push([stop.lat, stop.lng]);
     const marker = L.marker([stop.lat, stop.lng], { icon: makeIcon(stop.num) }).addTo(map);
     marker.on('click', () => {
-      const next = STOPS[i+1];
-      let dist = null;
-      if (next && next.lat){
-        dist = haversine(stop.lat, stop.lng, next.lat, next.lng);
-      }
-      openSheet(stop, next, dist);
+      openSheet(stop, STOPS[i+1]);
     });
   });
 
