@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cascinar Mangiando Home Made</title>
+<style>
+  :root{
+    --cream:#f5f0e6;
+    --brown:#8a6d3b;
+    --sage:#7d8c6a;
+    --ink:#33302a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Trebuchet MS', Verdana, sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:24px 16px 60px;
+  }
+  h1{
+    font-size:1.6rem;
+    text-align:center;
+    margin:20px 0 4px;
+    color:var(--brown);
+  }
+  h2{
+    font-size:1.1rem;
+    text-align:center;
+    margin:0 0 20px;
+    font-weight:normal;
+    color:var(--sage);
+  }
+  img.poster{
+    width:100%;
+    max-width:480px;
+    border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.15);
+    margin-bottom:24px;
+  }
+  .buttons{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    width:100%;
+    max-width:320px;
+  }
+  a.btn{
+    display:block;
+    text-align:center;
+    padding:14px 20px;
+    border-radius:30px;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:1.05rem;
+    transition:transform .15s ease;
+  }
+  a.btn:active{ transform:scale(0.97); }
+  .btn-primary{ background:var(--brown); color:#fff; }
+  .btn-secondary{ background:var(--sage); color:#fff; }
+  footer{
+    margin-top:40px;
+    font-size:0.85rem;
+    color:#999;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+  <h1>Cascinar Mangiando Home Made</h1>
+  <h2>Camminando tra Oleggio e Bellinzago — 14 Giugno 2026</h2>
+
+  <img class="poster" src="locandina.jpg" alt="Locandina evento">
+
+  <div class="buttons">
+    <a class="btn btn-primary" href="itinerario.html">📍 Programma e percorso</a>
+    <a class="btn btn-secondary" href="tessera.html">🎫 La mia tessera</a>
+  </div>
+
+  <footer>Cascinar Mangiando · 14 Giugno 2026</footer>
+</body>
+</html>

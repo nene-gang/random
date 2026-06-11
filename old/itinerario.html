@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Itinerario - Cascinar Mangiando</title>
+<style>
+  :root{
+    --cream:#f5f0e6;
+    --brown:#8a6d3b;
+    --sage:#7d8c6a;
+    --ink:#33302a;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Trebuchet MS', Verdana, sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    padding:16px;
+    max-width:520px;
+    margin:0 auto;
+  }
+  a{ color:var(--brown); }
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .topbar a{ text-decoration:none; font-weight:bold; }
+  h1{
+    font-size:1.4rem;
+    text-align:center;
+    color:var(--brown);
+    margin:6px 0 2px;
+  }
+  .date{
+    text-align:center;
+    color:var(--sage);
+    margin-bottom:18px;
+    font-size:0.95rem;
+  }
+  .route-link{
+    display:block;
+    text-align:center;
+    background:var(--sage);
+    color:#fff;
+    text-decoration:none;
+    padding:12px;
+    border-radius:30px;
+    font-weight:bold;
+    margin-bottom:24px;
+  }
+  .stop{
+    background:var(--card);
+    border-radius:14px;
+    padding:16px;
+    margin-bottom:14px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+    border-left:6px solid var(--brown);
+  }
+  .stop h2{
+    margin:0 0 4px;
+    font-size:1.1rem;
+    color:var(--brown);
+  }
+  .stop .addr{
+    font-size:0.85rem;
+    color:#777;
+    margin-bottom:8px;
+  }
+  .stop .menu{
+    font-size:0.95rem;
+    margin-bottom:10px;
+    line-height:1.4;
+  }
+  .stop .links{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .stop .links a{
+    font-size:0.85rem;
+    background:#f0ebdf;
+    padding:6px 12px;
+    border-radius:20px;
+    text-decoration:none;
+    font-weight:bold;
+  }
+  .connector{
+    text-align:center;
+    color:var(--sage);
+    font-size:0.85rem;
+    margin:-6px 0 14px;
+    font-style:italic;
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html">← Locandina</a>
+    <a href="tessera.html">🎫 Tessera</a>
+  </div>
+
+  <h1>Cascinar Mangiando Home Made</h1>
+  <div class="date">Camminando tra Oleggio e Bellinzago · 14 Giugno 2026</div>
+
+  <a class="route-link" target="_blank"
+     href="https://www.google.com/maps/dir/?api=1&origin=Via+San+Giovanni+165,+28047+Oleggio+NO&destination=45.6000,8.6606&waypoints=Via+Strera+112,+28047+Oleggio+NO|Via+Ticino+105,+28043+Bellinzago+Novarese+NO&travelmode=walking">
+    🗺️ Apri il percorso completo a piedi
+  </a>
+
+  <!-- TAPPA 1 -->
+  <div class="stop">
+    <h2>Tappa I · Circolo San Giovanni</h2>
+    <div class="addr">Via San Giovanni 165, 28047 Oleggio (NO)</div>
+    <div class="menu">🍷 Aperitivo libero</div>
+    <div class="links">
+      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=Via+San+Giovanni+165,+28047+Oleggio+NO">Apri mappa</a>
+    </div>
+  </div>
+
+  <div class="connector">
+    🚶‍♀️ verso la Tappa II ·
+    <a target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Via+San+Giovanni+165,+28047+Oleggio+NO&destination=Via+Strera+112,+28047+Oleggio+NO&travelmode=walking">percorso e tempo</a>
+  </div>
+
+  <!-- TAPPA 2 -->
+  <div class="stop">
+    <h2>Tappa II · Da Ema e Wendy</h2>
+    <div class="addr">Via Strera 112, 28047 Oleggio (NO)</div>
+    <div class="menu">🍝 Lasagne e vino rosso</div>
+    <div class="links">
+      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=Via+Strera+112,+28047+Oleggio+NO">Apri mappa</a>
+    </div>
+  </div>
+
+  <div class="connector">
+    🚶‍♂️ verso la Tappa III ·
+    <a target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Via+Strera+112,+28047+Oleggio+NO&destination=Via+Ticino+105,+28043+Bellinzago+Novarese+NO&travelmode=walking">percorso e tempo</a>
+  </div>
+
+  <!-- TAPPA 3 -->
+  <div class="stop">
+    <h2>Tappa III · Da Gaber e Lele</h2>
+    <div class="addr">Via Ticino 105, 28043 Bellinzago Novarese (NO)</div>
+    <div class="menu">🍖 Polpette fritte e in umido, purè e carote alla paprika, vino rosso</div>
+    <div class="links">
+      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=Via+Ticino+105,+28043+Bellinzago+Novarese+NO">Apri mappa</a>
+    </div>
+  </div>
+
+  <div class="connector">
+    🚶 verso la Tappa IV ·
+    <a target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Via+Ticino+105,+28043+Bellinzago+Novarese+NO&destination=45.6000,8.6606&travelmode=walking">percorso e tempo</a>
+  </div>
+
+  <!-- TAPPA 4 -->
+  <div class="stop">
+    <h2>Tappa IV · Big Bamboo</h2>
+    <div class="addr">45°33'60.0"N 8°39'38.4"E</div>
+    <div class="menu">🍰 Torta caprese, caffè, ammazzacaffè</div>
+    <div class="links">
+      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=45.6000,8.6606">Apri mappa</a>
+    </div>
+  </div>
+
+</body>
+</html>

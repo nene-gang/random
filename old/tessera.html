@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tessera - Cascinar Mangiando</title>
+<style>
+  :root{
+    --cream:#f5f0e6;
+    --brown:#8a6d3b;
+    --sage:#7d8c6a;
+    --ink:#33302a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Trebuchet MS', Verdana, sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    padding:16px;
+    max-width:420px;
+    margin:0 auto;
+    text-align:center;
+  }
+  a{ color:var(--brown); }
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
+    text-align:left;
+  }
+  .topbar a{ text-decoration:none; font-weight:bold; }
+  h1{ font-size:1.3rem; color:var(--brown); margin:6px 0; }
+  .card{
+    background:#fff;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.1);
+    margin-top:10px;
+  }
+  input{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:1rem;
+    margin-bottom:10px;
+  }
+  button{
+    background:var(--brown);
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    border-radius:24px;
+    font-size:1rem;
+    font-weight:bold;
+    cursor:pointer;
+  }
+  img.qr{
+    margin-top:14px;
+    width:200px;
+    height:200px;
+  }
+  .stops{
+    margin-top:18px;
+    text-align:left;
+  }
+  .stop-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 4px;
+    border-bottom:1px solid #eee;
+    font-size:0.95rem;
+  }
+  .badge{
+    font-weight:bold;
+  }
+  .ok{ color:var(--sage); }
+  .pending{ color:#bbb; }
+  .hint{ font-size:0.8rem; color:#999; margin-top:14px; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html">← Locandina</a>
+    <a href="itinerario.html">📍 Itinerario</a>
+  </div>
+
+  <h1>🎫 La tua tessera</h1>
+
+  <div class="card">
+    <div id="setup">
+      <p>Inserisci il tuo nome per creare la tessera:</p>
+      <input id="nome" type="text" placeholder="Nome e cognome">
+      <button onclick="creaTessera()">Crea tessera</button>
+    </div>
+
+    <div id="tessera" style="display:none;">
+      <h2 id="nomeMostrato"></h2>
+      <img class="qr" id="qrImg" alt="QR tessera">
+      <div class="stops" id="stops"></div>
+      <p class="hint">Mostra questo QR all'organizzatore ad ogni tappa per la convalida.</p>
+    </div>
+  </div>
+
+<script>
+const API = "/api/checkin";
+const TAPPE = ["Tappa I","Tappa II","Tappa III","Tappa IV"];
+
+function getId(){
+  let id = localStorage.getItem("tessera_id");
+  if(!id){
+    id = crypto.randomUUID();
+    localStorage.setItem("tessera_id", id);
+  }
+  return id;
+}
+
+function mostraTessera(nome, id){
+  document.getElementById("setup").style.display="none";
+  document.getElementById("tessera").style.display="block";
+  document.getElementById("nomeMostrato").textContent = nome;
+  document.getElementById("qrImg").src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(id);
+  aggiornaStato(id);
+}
+
+function aggiornaStato(id){
+  fetch(API + "?id=" + encodeURIComponent(id))
+    .then(r => r.ok ? r.json() : {checkins:{}})
+    .then(data => {
+      const checkins = data.checkins || {};
+      const el = document.getElementById("stops");
+      el.innerHTML = "";
+      TAPPE.forEach((t,i) => {
+        const key = "t" + (i+1);
+        const done = checkins[key];
+        const row = document.createElement("div");
+        row.className = "stop-row";
+        row.innerHTML = `<span>${t}</span><span class="badge ${done?'ok':'pending'}">${done ? '✅ validata' : '⏳ in attesa'}</span>`;
+        el.appendChild(row);
+      });
+    })
+    .catch(()=>{});
+}
+
+function creaTessera(){
+  const nome = document.getElementById("nome").value.trim();
+  if(!nome) return alert("Inserisci il tuo nome");
+  const id = getId();
+  localStorage.setItem("tessera_nome", nome);
+  fetch(API, {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({id, nome})
+  }).finally(()=> mostraTessera(nome, id));
+}
+
+// Auto-load se già esiste
+window.onload = () => {
+  const nome = localStorage.getItem("tessera_nome");
+  if(nome){
+    mostraTessera(nome, getId());
+    setInterval(()=>aggiornaStato(getId()), 8000);
+  }
+};
+</script>
+</body>
+</html>

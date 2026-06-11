@@ -4,83 +4,249 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cascinar Mangiando Home Made</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
   :root{
-    --cream:#f5f0e6;
+    --cream:#f3ede0;
+    --paper:#fdfaf3;
     --brown:#8a6d3b;
+    --brown-dark:#6e5527;
     --sage:#7d8c6a;
-    --ink:#33302a;
+    --lavender:#9a86b3;
+    --ink:#3a3226;
+    --line:#cfc7b4;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
-    font-family:'Trebuchet MS', Verdana, sans-serif;
+    font-family:'Patrick Hand', cursive;
     background:var(--cream);
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(154,134,179,0.06), transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(125,140,106,0.07), transparent 40%);
     color:var(--ink);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:24px 16px 60px;
+    padding:18px 14px 60px;
   }
-  h1{
+  .wrap{
+    max-width:1000px;
+    margin:0 auto;
+  }
+  h1.title{
+    font-family:'Caveat', cursive;
+    font-size:2.6rem;
+    text-align:center;
+    color:var(--brown-dark);
+    margin:6px 0 0;
+    line-height:1.1;
+  }
+  h2.subtitle{
+    font-family:'Caveat', cursive;
     font-size:1.6rem;
     text-align:center;
-    margin:20px 0 4px;
-    color:var(--brown);
+    color:var(--lavender);
+    font-weight:700;
+    margin:2px 0 22px;
   }
-  h2{
-    font-size:1.1rem;
-    text-align:center;
-    margin:0 0 20px;
-    font-weight:normal;
-    color:var(--sage);
+
+  .layout{
+    display:flex;
+    gap:24px;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    justify-content:center;
   }
-  img.poster{
+
+  /* --- Locandina --- */
+  .poster{
+    flex:1 1 360px;
+    max-width:420px;
+    position:relative;
+  }
+  .poster img{
     width:100%;
-    max-width:480px;
-    border-radius:12px;
-    box-shadow:0 6px 18px rgba(0,0,0,0.15);
-    margin-bottom:24px;
+    border-radius:6px;
+    box-shadow:0 8px 24px rgba(60,45,20,0.18);
+    display:block;
+    transform:rotate(-1.5deg);
   }
+
+  /* --- Menu card --- */
+  .menu{
+    flex:1 1 360px;
+    max-width:460px;
+    background:
+      repeating-linear-gradient(var(--paper), var(--paper) 38px, var(--line) 39px);
+    border-radius:6px;
+    padding:24px 22px 22px 30px;
+    box-shadow:0 8px 24px rgba(60,45,20,0.15);
+    position:relative;
+    transform:rotate(0.8deg);
+  }
+  .menu::before{
+    content:"";
+    position:absolute;
+    top:0; left:14px; bottom:0;
+    width:2px;
+    background:#e3a9a9;
+    opacity:.6;
+  }
+  .menu-date{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.7rem;
+    color:var(--brown-dark);
+    text-align:center;
+    margin:0 0 10px;
+    border-bottom:2px dashed var(--line);
+    padding-bottom:8px;
+  }
+
+  .stop{
+    margin-bottom:16px;
+  }
+  .stop-head{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    margin-bottom:2px;
+  }
+  .stop-num{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.5rem;
+    color:#fff;
+    background:var(--sage);
+    border-radius:50%;
+    width:34px;
+    height:34px;
+    min-width:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 2px 4px rgba(0,0,0,0.15);
+  }
+  .stop-place{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.35rem;
+    color:var(--brown-dark);
+  }
+  .stop-body{
+    margin-left:42px;
+    font-size:1.08rem;
+    line-height:1.45;
+  }
+  .stop-body .dish::before{ content:"🍽️ "; }
+  .stop-body .drink::before{ content:"🍷 "; }
+  .stop-body .drink{ color:var(--sage); }
+
+  /* --- Buttons --- */
   .buttons{
     display:flex;
-    flex-direction:column;
+    justify-content:center;
     gap:14px;
-    width:100%;
-    max-width:320px;
+    flex-wrap:wrap;
+    margin-top:30px;
   }
   a.btn{
-    display:block;
+    display:inline-block;
     text-align:center;
-    padding:14px 20px;
+    padding:13px 26px;
     border-radius:30px;
     text-decoration:none;
-    font-weight:bold;
-    font-size:1.05rem;
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.3rem;
+    color:#fff;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
     transition:transform .15s ease;
   }
   a.btn:active{ transform:scale(0.97); }
-  .btn-primary{ background:var(--brown); color:#fff; }
-  .btn-secondary{ background:var(--sage); color:#fff; }
+  .btn-primary{ background:var(--brown); }
+  .btn-secondary{ background:var(--lavender); }
+
   footer{
     margin-top:40px;
-    font-size:0.85rem;
-    color:#999;
+    font-family:'Caveat', cursive;
+    font-size:1.1rem;
+    color:#a99a7d;
     text-align:center;
+  }
+
+  @media (max-width: 700px){
+    .poster img, .menu{ transform:none; }
   }
 </style>
 </head>
 <body>
-  <h1>Cascinar Mangiando Home Made</h1>
-  <h2>Camminando tra Oleggio e Bellinzago — 14 Giugno 2026</h2>
+<div class="wrap">
 
-  <img class="poster" src="locandina.jpg" alt="Locandina evento">
+  <h1 class="title">Cascinar Mangiando Home Made</h1>
+  <h2 class="subtitle">Camminando tra Oleggio e Bellinzago</h2>
+
+  <div class="layout">
+
+    <div class="poster">
+      <img src="locandina.jpg" alt="Locandina evento - 14 Giugno 2026">
+    </div>
+
+    <div class="menu">
+      <div class="menu-date">🌿 14 Giugno 2026 🌿</div>
+
+      <div class="stop">
+        <div class="stop-head">
+          <span class="stop-num">1</span>
+          <span class="stop-place">Circolo San Giovanni, Oleggio</span>
+        </div>
+        <div class="stop-body">
+          <div class="dish">Aperitivo libero</div>
+          <div class="drink">Da bere... a piacere!</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-head">
+          <span class="stop-num">2</span>
+          <span class="stop-place">Da Ema e Wendy</span>
+        </div>
+        <div class="stop-body">
+          <div class="dish">Lasagne</div>
+          <div class="drink">Vino rosso</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-head">
+          <span class="stop-num">3</span>
+          <span class="stop-place">Da Gaber e Lele</span>
+        </div>
+        <div class="stop-body">
+          <div class="dish">Polpette fritte e in umido, con purè e carote alla paprika</div>
+          <div class="drink">Vino rosso</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-head">
+          <span class="stop-num">4</span>
+          <span class="stop-place">Big Bamboo</span>
+        </div>
+        <div class="stop-body">
+          <div class="dish">Torta caprese</div>
+          <div class="drink">Caffè e ammazzacaffè</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
   <div class="buttons">
     <a class="btn btn-primary" href="itinerario.html">📍 Programma e percorso</a>
     <a class="btn btn-secondary" href="tessera.html">🎫 La mia tessera</a>
   </div>
 
-  <footer>Cascinar Mangiando · 14 Giugno 2026</footer>
+  <footer>~ Cascinar Mangiando · 14 Giugno 2026 ~</footer>
+</div>
 </body>
 </html>
